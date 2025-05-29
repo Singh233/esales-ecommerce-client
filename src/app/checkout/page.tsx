@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSelector, useAppDispatch } from "~/lib/redux/store";
@@ -12,6 +12,7 @@ import Image from "next/image";
 import { Loader2, CreditCard, Lock, ArrowLeft, TestTube } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useSession } from "~/lib/auth-client";
 
 interface CheckoutFormData {
   fullName: string;
@@ -39,6 +40,7 @@ export default function CheckoutPage() {
     (state) => state.cart
   );
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: "",
@@ -56,6 +58,17 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [paymentSimulation, setPaymentSimulation] =
     useState<PaymentSimulation>("paid");
+
+  useEffect(() => {
+    // Pre-fill form data with user session information if available
+    if (session?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: session.user.name || "",
+        email: session.user.email || "",
+      }));
+    }
+  }, [session]);
 
   const createOrderMutation = useMutation({
     mutationFn: createOrder,
@@ -373,11 +386,12 @@ export default function CheckoutPage() {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            className={`w-full px-3 py-2 border opacity-75 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                               errors.email
                                 ? "border-red-500"
                                 : "border-gray-300"
                             }`}
+                            disabled
                           />
                           {errors.email && (
                             <p className="text-red-500 text-xs mt-1">
