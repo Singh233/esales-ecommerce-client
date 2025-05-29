@@ -7,15 +7,18 @@ import { useAppSelector } from "~/lib/redux/store";
 import { useSession, authClient } from "~/lib/auth-client";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const totalItems = useAppSelector((state) => state.cart.totalItems);
   const { data: session, isPending } = useSession();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
       toast.success("Successfully signed out");
+      router.refresh();
     } catch (error) {
       console.error("Sign out error:", error);
       toast.error("Failed to sign out");
