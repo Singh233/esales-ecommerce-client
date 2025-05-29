@@ -9,7 +9,7 @@ import { createOrder } from "~/lib/api";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import Image from "next/image";
-import { Loader2, CreditCard, Lock } from "lucide-react";
+import { Loader2, CreditCard, Lock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -217,73 +217,86 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-center mb-8">Checkout</h1>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="flex items-center space-x-4">
+            <Link href="/cart">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold">Checkout</h1>
+              <p className="text-muted-foreground">
+                {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left side - Order Summary */}
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    Order Summary
-                    <span className="text-sm font-normal text-gray-600">
-                      {totalItems} item{totalItems !== 1 ? "s" : ""}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center space-x-4 p-4 border rounded-lg"
-                    >
-                      <div className="relative w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
-                        {item.image ? (
-                          <Image
-                            src={item.image}
-                            alt={item.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            No Image
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-sm">{item.title}</h3>
-                        <p className="text-xs text-gray-600">{item.brand}</p>
-                        {item.selectedColor && (
+              <div className="sticky top-22">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      Order Summary
+                      <span className="text-sm font-normal text-gray-600">
+                        {totalItems} item{totalItems !== 1 ? "s" : ""}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center space-x-4 p-4 border rounded-lg"
+                      >
+                        <div className="relative w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                          {item.image ? (
+                            <Image
+                              src={item.image}
+                              alt={item.title}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              No Image
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-sm">{item.title}</h3>
+                          <p className="text-xs text-gray-600">{item.brand}</p>
+                          {item.selectedColor && (
+                            <p className="text-xs text-gray-600">
+                              Color: {item.selectedColor}
+                            </p>
+                          )}
+                          {item.selectedSize && (
+                            <p className="text-xs text-gray-600">
+                              Size: {item.selectedSize}
+                            </p>
+                          )}
                           <p className="text-xs text-gray-600">
-                            Color: {item.selectedColor}
+                            Qty: {item.quantity}
                           </p>
-                        )}
-                        {item.selectedSize && (
-                          <p className="text-xs text-gray-600">
-                            Size: {item.selectedSize}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">
+                            ${(item.price * item.quantity).toFixed(2)}
                           </p>
-                        )}
-                        <p className="text-xs text-gray-600">
-                          Qty: {item.quantity}
-                        </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
 
-                  <div className="border-t pt-4">
-                    <div className="flex justify-between items-center text-lg font-bold">
-                      <span>Total</span>
-                      <span>${totalAmount.toFixed(2)}</span>
+                    <div className="border-t pt-4">
+                      <div className="flex justify-between items-center text-lg font-bold">
+                        <span>Total</span>
+                        <span>${totalAmount.toFixed(2)}</span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             {/* Right side - Checkout Form */}

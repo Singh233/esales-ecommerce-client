@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { Star, Minus, Plus, ShoppingCart } from "lucide-react";
-import { getProduct, type Product } from "~/lib/api";
+import {
+  getProduct,
+  addItemToCart,
+  type Product,
+  type AddItemToCartData,
+} from "~/lib/api";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import {
@@ -40,6 +45,7 @@ export default function ProductLandingPage({
   const { data: session } = useSession();
 
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
 
   const {
     data: product,
@@ -50,6 +56,35 @@ export default function ProductLandingPage({
     queryFn: () => getProduct(productId),
     retry: 2,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Add item to cart mutation
+  const addToCartMutation = useMutation({
+    mutationFn: (itemData: AddItemToCartData) => addItemToCart(itemData),
+    onSuccess: () => {
+      // Update local Redux state with backend response
+      if (product) {
+        dispatch(
+          addToCart({
+            product,
+            selectedColor,
+            selectedSize,
+            quantity,
+          })
+        );
+      }
+
+      // Invalidate cart queries to refetch latest data
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+
+      toast.success(`${product?.title} added to cart!`);
+    },
+    onError: (error: Error) => {
+      console.error("Failed to add item to cart:", error);
+      toast.error(
+        error.message || "Failed to add item to cart. Please try again."
+      );
+    },
   });
 
   useEffect(() => {
@@ -68,7 +103,7 @@ export default function ProductLandingPage({
     });
   };
 
-  const handleBuyNow = () => {
+  const handleAddToCart = () => {
     if (!product) return;
 
     if (!session?.user) {
@@ -76,18 +111,16 @@ export default function ProductLandingPage({
       return;
     }
 
-    // Dispatch addToCart action
-    dispatch(
-      addToCart({
-        product,
-        selectedColor,
-        selectedSize,
-        quantity,
-      })
-    );
+    // Prepare cart item data for API
+    const itemData: AddItemToCartData = {
+      product: product.id,
+      quantity,
+      color: selectedColor || undefined,
+      size: selectedSize || undefined,
+    };
 
-    // Show success message (you can replace this with a proper toast notification)
-    toast.success(`${product.title} added to cart!`);
+    // Call the mutation to add item to cart via API
+    addToCartMutation.mutate(itemData);
   };
 
   // Convert single image to array for carousel and filter out undefined images
@@ -332,13 +365,13 @@ export default function ProductLandingPage({
 
             {/* Buy Now Button */}
             <Button
-              onClick={handleBuyNow}
-              disabled={product.quantity === 0}
+              onClick={handleAddToCart}
+              disabled={product.quantity === 0 || addToCartMutation.isPending}
               size="lg"
               className="w-full"
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
-              Add to Cart
+              {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
             </Button>
 
             {/* Additional Product Info */}

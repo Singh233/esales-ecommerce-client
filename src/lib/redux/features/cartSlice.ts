@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { Cart } from "~/lib/api";
 
 interface CartItem {
   id: string;
@@ -141,10 +142,45 @@ export const cartSlice = createSlice({
       state.totalItems = 0;
       state.totalAmount = 0;
     },
+
+    setCartFromAPI: (state, action: PayloadAction<Cart>) => {
+      const apiCart = action.payload;
+
+      // Transform API cart items to match the Redux cart item structure
+      state.items = apiCart.items.map((apiItem) => {
+        const itemId = `${apiItem.product.id}-${apiItem.color || "default"}-${
+          apiItem.size || "default"
+        }`;
+
+        return {
+          id: itemId,
+          productId: apiItem.product.id,
+          title: apiItem.product.title,
+          price: apiItem.price,
+          image: Array.isArray(apiItem.product.images)
+            ? apiItem.product.images[0]
+            : apiItem.product.images,
+          brand: apiItem.product.brand,
+          category: apiItem.product.category,
+          selectedColor: apiItem.color || null,
+          selectedSize: apiItem.size || null,
+          quantity: apiItem.quantity,
+        };
+      });
+
+      // Use totals from API or recalculate
+      state.totalItems = apiCart.totalItems;
+      state.totalAmount = apiCart.totalAmount;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, updateItemQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  updateItemQuantity,
+  clearCart,
+  setCartFromAPI,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

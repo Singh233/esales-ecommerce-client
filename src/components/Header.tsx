@@ -3,20 +3,42 @@
 import { LogOut } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
-import { useAppSelector } from "~/lib/redux/store";
+import { useAppSelector, useAppDispatch } from "~/lib/redux/store";
 import { useSession, authClient } from "~/lib/auth-client";
+import { useQuery } from "@tanstack/react-query";
+import { getCart } from "~/lib/api";
+import { setCartFromAPI, clearCart } from "~/lib/redux/features/cartSlice";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Header() {
   const totalItems = useAppSelector((state) => state.cart.totalItems);
+  const dispatch = useAppDispatch();
   const { data: session, isPending } = useSession();
   const router = useRouter();
+
+  // Fetch cart data when user is authenticated
+  const { data: cartData } = useQuery({
+    queryKey: ["cart"],
+    queryFn: getCart,
+    enabled: !!session?.user, // Only fetch when user is authenticated
+    retry: 1,
+    refetchOnWindowFocus: true,
+  });
+
+  // Sync cart data with Redux store when cart data changes
+  useEffect(() => {
+    if (cartData && session?.user) {
+      dispatch(setCartFromAPI(cartData));
+    }
+  }, [cartData, session?.user, dispatch]);
 
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
+      dispatch(clearCart()); // Clear cart when user signs out
       toast.success("Successfully signed out");
       router.refresh();
     } catch (error) {
@@ -58,7 +80,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href={"/checkout"}
+              href={"/cart"}
               className="relative text-gray-600  flex items-center gap-2 p-2 text-xs font-semibold rounded-sm hover:bg-gray-100 transition-colors"
             >
               {/* <ShoppingCart className="h-4 w-4" /> */}

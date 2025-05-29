@@ -154,3 +154,145 @@ export const getUserOrders = async (
   const data = await response.json();
   return data;
 };
+
+// Cart-related interfaces and API functions
+export interface CartItem {
+  _id: string;
+  product: Product;
+  quantity: number;
+  price: number;
+  color?: string;
+  size?: string;
+}
+
+export interface Cart {
+  _id: string;
+  userEmail: string;
+  items: CartItem[];
+  totalAmount: number;
+  totalItems: number;
+  status: "active" | "abandoned" | "converted";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddItemToCartData {
+  product: string; // Product ID
+  quantity: number;
+  color?: string;
+  size?: string;
+}
+
+export interface CartApiResponse {
+  message: string;
+  cart: Cart;
+}
+
+// Get or create user's cart
+export const getCart = async (): Promise<Cart> => {
+  const response = await fetch(`${API_BASE_URL}/cart`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch cart: ${response.status}`);
+  }
+
+  const data: CartApiResponse = await response.json();
+  return data.cart;
+};
+
+// Add item to cart
+export const addItemToCart = async (
+  itemData: AddItemToCartData
+): Promise<Cart> => {
+  const response = await fetch(`${API_BASE_URL}/cart/items`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(itemData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || `Failed to add item to cart: ${response.status}`
+    );
+  }
+
+  const data: CartApiResponse = await response.json();
+  return data.cart;
+};
+
+// Update cart item quantity
+export const updateCartItem = async (
+  itemId: string,
+  quantity: number
+): Promise<Cart> => {
+  const response = await fetch(`${API_BASE_URL}/cart/items/${itemId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ quantity }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || `Failed to update cart item: ${response.status}`
+    );
+  }
+
+  const data: CartApiResponse = await response.json();
+  return data.cart;
+};
+
+// Remove item from cart
+export const removeCartItem = async (itemId: string): Promise<Cart> => {
+  const response = await fetch(`${API_BASE_URL}/cart/items/${itemId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || `Failed to remove item from cart: ${response.status}`
+    );
+  }
+
+  const data: CartApiResponse = await response.json();
+  return data.cart;
+};
+
+// Clear entire cart
+export const clearCart = async (): Promise<Cart> => {
+  const response = await fetch(`${API_BASE_URL}/cart`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || `Failed to clear cart: ${response.status}`
+    );
+  }
+
+  const data: CartApiResponse = await response.json();
+  return data.cart;
+};
