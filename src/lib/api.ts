@@ -96,6 +96,7 @@ export const createOrder = async (orderData: OrderData): Promise<Order> => {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(orderData),
   });
 

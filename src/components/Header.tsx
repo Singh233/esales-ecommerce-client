@@ -44,22 +44,6 @@ export default function Header() {
               Home
               <span className="sr-only">Home</span>
             </Link>
-            <Link
-              href={"/checkout"}
-              className="relative text-gray-600  flex items-center gap-2 p-2 text-xs font-semibold rounded-sm hover:bg-gray-100 transition-colors"
-            >
-              {/* <ShoppingCart className="h-4 w-4" /> */}
-              Cart
-              {totalItems > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {totalItems > 99 ? "99+" : totalItems}
-                </Badge>
-              )}
-              <span className="sr-only">Shopping cart</span>
-            </Link>
 
             <Link
               href={"/orders"}
@@ -68,6 +52,20 @@ export default function Header() {
               {/* <ShoppingCart className="h-4 w-4" /> */}
               Orders
               <span className="sr-only">Orders</span>
+            </Link>
+
+            <Link
+              href={"/checkout"}
+              className="relative text-gray-600  flex items-center gap-2 p-2 text-xs font-semibold rounded-sm hover:bg-gray-100 transition-colors"
+            >
+              {/* <ShoppingCart className="h-4 w-4" /> */}
+              Cart
+              {totalItems > 0 && (
+                <Badge className="absolute -top-1 -right-3 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-500">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </Badge>
+              )}
+              <span className="sr-only">Shopping cart</span>
             </Link>
           </div>
 

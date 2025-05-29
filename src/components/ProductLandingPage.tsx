@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { Star, Minus, Plus, ShoppingCart } from "lucide-react";
@@ -22,8 +22,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel";
-import { useAppDispatch, useAppSelector } from "~/lib/redux/store";
+import { useAppDispatch } from "~/lib/redux/store";
 import { addToCart } from "~/lib/redux/features/cartSlice";
+import { toast } from "sonner";
+import { useSession } from "~/lib/auth-client";
 
 interface ProductLandingPageProps {
   productId?: string;
@@ -35,9 +37,9 @@ export default function ProductLandingPage({
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
+  const { data: session } = useSession();
 
   const dispatch = useAppDispatch();
-  const cartItems = useAppSelector((state) => state.cart.totalItems);
 
   const {
     data: product,
@@ -50,6 +52,15 @@ export default function ProductLandingPage({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  useEffect(() => {
+    // default selected color and size
+    if (product) {
+      setSelectedColor(product.colors?.[0] || "");
+      setSelectedSize(product.sizes?.[0] || "");
+      setQuantity(Math.min(product.quantity || 1, 1)); // Ensure quantity starts at 1 or product quantity
+    }
+  }, [product]);
+
   const handleQuantityChange = (change: number) => {
     setQuantity((prev) => {
       const newQuantity = prev + change;
@@ -59,6 +70,11 @@ export default function ProductLandingPage({
 
   const handleBuyNow = () => {
     if (!product) return;
+
+    if (!session?.user) {
+      toast.info("Please log in to add items to your cart.");
+      return;
+    }
 
     // Dispatch addToCart action
     dispatch(
@@ -71,15 +87,7 @@ export default function ProductLandingPage({
     );
 
     // Show success message (you can replace this with a proper toast notification)
-    alert(`Added ${quantity} ${product.title} to cart!`);
-
-    console.log("Product added to cart", {
-      productId,
-      selectedColor,
-      selectedSize,
-      quantity,
-      cartItems: cartItems + quantity,
-    });
+    toast.success(`${product.title} added to cart!`);
   };
 
   // Convert single image to array for carousel and filter out undefined images
@@ -330,7 +338,7 @@ export default function ProductLandingPage({
               className="w-full"
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
-              Buy Now
+              Add to Cart
             </Button>
 
             {/* Additional Product Info */}

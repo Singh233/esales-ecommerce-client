@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import Image from "next/image";
 import { Loader2, CreditCard, Lock } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface CheckoutFormData {
   fullName: string;
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
     },
     onError: (error) => {
       console.error("Order creation failed:", error);
-      alert("Failed to create order. Please try again.");
+      toast.error("Failed to create order. Please try again later.");
     },
   });
 
@@ -159,7 +160,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (items.length === 0) {
-      alert("Your cart is empty");
+      toast.error("Your cart is empty. Please add items before checking out.");
       return;
     }
 
