@@ -103,7 +103,7 @@ export default function ProductLandingPage({
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
@@ -341,7 +341,7 @@ export default function ProductLandingPage({
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">SKU:</span>
-                <span className="font-mono text-xs">{product._id}</span>
+                <span className="font-mono text-xs">{product.id}</span>
               </div>
             </div>
           </div>

@@ -21,7 +21,7 @@ interface CartState {
 
 interface AddToCartPayload {
   product: {
-    _id: string;
+    id: string;
     title: string;
     price: number;
     images: string | string[];
@@ -52,7 +52,7 @@ export const cartSlice = createSlice({
       const { product, selectedColor, selectedSize, quantity } = action.payload;
 
       // Create a unique identifier for the cart item
-      const itemId = `${product._id}-${selectedColor || "default"}-${
+      const itemId = `${product.id}-${selectedColor || "default"}-${
         selectedSize || "default"
       }`;
 
@@ -68,7 +68,7 @@ export const cartSlice = createSlice({
         // Add new item to cart
         const newItem: CartItem = {
           id: itemId,
-          productId: product._id,
+          productId: product.id,
           title: product.title,
           price: product.price,
           image: Array.isArray(product.images)

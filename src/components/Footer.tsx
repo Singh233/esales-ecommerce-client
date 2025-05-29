@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="border-none bg-background mt-auto fixed bottom-0 py-5 w-full">
+    <footer className="border-none bg-background mt-auto py-5 w-full">
       {/* Trust Badges */}
       <div className="flex items-center justify-center space-x-8  w-full">
         <div className="px-4 flex items-center gap-2">

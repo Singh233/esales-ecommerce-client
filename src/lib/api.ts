@@ -2,7 +2,7 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/v1";
 
 export interface Product {
-  _id: string;
+  id: string;
   title: string;
   brand: string;
   price: number;
@@ -39,4 +39,69 @@ export const getProduct = async (id: string): Promise<Product> => {
   }
 
   return data.product;
+};
+
+export interface OrderItem {
+  product: string;
+  quantity: number;
+  price: number;
+  color?: string | null;
+  size?: string | null;
+}
+
+export interface OrderData {
+  contact: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  items: OrderItem[];
+  shippingAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentMethod: string;
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  contact: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  items: OrderItem[];
+  status: string;
+  shippingAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentMethod: string;
+  paymentStatus: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const createOrder = async (orderData: OrderData): Promise<Order> => {
+  const response = await fetch(`${API_BASE_URL}/orders`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create order: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.order || data;
 };

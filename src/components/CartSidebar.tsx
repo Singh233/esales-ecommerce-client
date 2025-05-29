@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "~/lib/redux/store";
 import {
   removeFromCart,
@@ -13,6 +14,7 @@ import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 
 export default function CartSidebar() {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { items, totalItems, totalAmount } = useAppSelector(
     (state) => state.cart
@@ -155,7 +157,9 @@ export default function CartSidebar() {
 
         {/* Cart Actions */}
         <div className="space-y-2">
-          <Button className="w-full">Proceed to Checkout</Button>
+          <Button className="w-full" onClick={() => router.push("/checkout")}>
+            Proceed to Checkout
+          </Button>
           <Button
             variant="outline"
             className="w-full"
