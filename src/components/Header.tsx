@@ -42,14 +42,6 @@ export default function Header() {
             >
               {/* <ShoppingCart className="h-4 w-4" /> */}
               Home
-              {totalItems > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {totalItems > 99 ? "99+" : totalItems}
-                </Badge>
-              )}
               <span className="sr-only">Home</span>
             </Link>
             <Link
@@ -75,14 +67,6 @@ export default function Header() {
             >
               {/* <ShoppingCart className="h-4 w-4" /> */}
               Orders
-              {totalItems > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {totalItems > 99 ? "99+" : totalItems}
-                </Badge>
-              )}
               <span className="sr-only">Orders</span>
             </Link>
           </div>

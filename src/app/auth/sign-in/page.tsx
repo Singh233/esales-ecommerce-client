@@ -86,7 +86,7 @@ export default function SignInPage() {
       }
 
       toast.success("Successfully signed in!");
-      router.push("/");
+      router.refresh();
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error("An unexpected error occurred");
