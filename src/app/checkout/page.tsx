@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSelector, useAppDispatch } from "~/lib/redux/store";
 import { clearCart } from "~/lib/redux/features/cartSlice";
-import { createOrder } from "~/lib/api";
+import { createOrder, clearCart as clearCartAPI } from "~/lib/api";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import Image from "next/image";
-import { Loader2, CreditCard, Lock, ArrowLeft } from "lucide-react";
+import { Loader2, CreditCard, Lock, ArrowLeft, TestTube } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -30,12 +30,15 @@ interface FormErrors {
   [key: string]: string;
 }
 
+type PaymentSimulation = "paid" | "failed" | "pending";
+
 export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { items, totalAmount, totalItems } = useAppSelector(
     (state) => state.cart
   );
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: "",
@@ -51,19 +54,32 @@ export default function CheckoutPage() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [paymentSimulation, setPaymentSimulation] =
+    useState<PaymentSimulation>("paid");
 
   const createOrderMutation = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
-      dispatch(clearCart());
-      router.push(`/order-confirmation/${data.orderNumber}`);
+      // Only redirect on successful simulation
+      if (paymentSimulation === "paid" || paymentSimulation === "pending") {
+        clearCartMutation.mutate();
+        dispatch(clearCart());
+        router.push(`/order-confirmation/${data.orderNumber}`);
+      }
     },
-    onError: (error) => {
-      console.error("Order creation failed:", error);
-      toast.error("Failed to create order. Please try again later.");
+    onError: () => {
+      toast.error("Payment failed. Please check your payment method.");
     },
   });
 
+  // Mutation for clearing cart
+  // Mutation for clearing cart
+  const clearCartMutation = useMutation({
+    mutationFn: () => clearCartAPI(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -189,6 +205,7 @@ export default function CheckoutPage() {
         country: "india", // Default to US for now
       },
       paymentMethod: "credit_card",
+      paymentStatus: paymentSimulation,
     };
 
     console.log(orderData);
@@ -603,6 +620,94 @@ export default function CheckoutPage() {
                                 {errors.cvv}
                               </p>
                             )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Payment Simulation */}
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 flex items-center">
+                        <TestTube className="w-5 h-5 mr-2" />
+                        Payment Simulation (Development Mode)
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Select a payment outcome to test different scenarios:
+                      </p>
+
+                      <div className="space-y-3">
+                        <div
+                          className="flex items-center space-x-3 cursor-pointer"
+                          onClick={() => setPaymentSimulation("paid")}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              paymentSimulation === "paid"
+                                ? "border-green-500 bg-green-500"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {paymentSimulation === "paid" && (
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                            )}
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-green-700 cursor-pointer">
+                              Approved Transaction
+                            </label>
+                            <p className="text-xs text-gray-600">
+                              Payment successful, order will be created
+                            </p>
+                          </div>
+                        </div>
+
+                        <div
+                          className="flex items-center space-x-3 cursor-pointer"
+                          onClick={() => setPaymentSimulation("failed")}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              paymentSimulation === "failed"
+                                ? "border-red-500 bg-red-500"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {paymentSimulation === "failed" && (
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                            )}
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-red-700 cursor-pointer">
+                              Declined Transaction
+                            </label>
+                            <p className="text-xs text-gray-600">
+                              Payment declined
+                            </p>
+                          </div>
+                        </div>
+
+                        <div
+                          className="flex items-center space-x-3 cursor-pointer"
+                          onClick={() => setPaymentSimulation("pending")}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              paymentSimulation === "pending"
+                                ? "border-orange-500 bg-orange-500"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {paymentSimulation === "pending" && (
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                            )}
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-orange-700 cursor-pointer">
+                              Gateway Error/Failure
+                            </label>
+                            <p className="text-xs text-gray-600">
+                              Payment gateway error
+                            </p>
                           </div>
                         </div>
                       </div>

@@ -8,7 +8,6 @@ import { useAppSelector, useAppDispatch } from "~/lib/redux/store";
 import {
   removeFromCart,
   updateItemQuantity,
-  clearCart as clearCartRedux,
   setCartFromAPI,
 } from "~/lib/redux/features/cartSlice";
 import {
@@ -147,14 +146,6 @@ export default function CartPage() {
 
   const handleClearCart = () => {
     setIsClearing(true);
-
-    if (!session?.user) {
-      // For unauthenticated users, clear Redux store only
-      dispatch(clearCartRedux());
-      toast.success("Cart cleared successfully");
-      setIsClearing(false);
-      return;
-    }
 
     clearCartMutation.mutate();
   };
