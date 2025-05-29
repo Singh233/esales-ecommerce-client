@@ -146,9 +146,9 @@ export default function ProductLandingPage({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 max-w-6xl mx-auto">
           {/* Product Images Carousel */}
           <div className="space-y-4">
             <Carousel className="w-full">
@@ -347,6 +347,6 @@ export default function ProductLandingPage({
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
