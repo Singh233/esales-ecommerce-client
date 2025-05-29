@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import Image from "next/image";
 
 export default function Footer() {
@@ -9,7 +9,7 @@ export default function Footer() {
       {/* Trust Badges */}
       <div className="flex items-center justify-center space-x-8  w-full">
         <div className="px-4 flex items-center gap-2">
-          <Shield className="h-6 w-6 text-muted-foreground" />
+          <ShieldCheck className="h-6 w-6 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
             100% Secure Shopping
           </span>

@@ -192,7 +192,7 @@ export default function ProductLandingPage({
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 max-w-6xl mx-auto">
           {/* Product Images Carousel */}
           <div className="space-y-4">
-            <Carousel className="w-full">
+            <Carousel className="w-full" opts={{ loop: true }}>
               <CarouselContent>
                 {images.map((image, index) => (
                   <CarouselItem key={index}>
