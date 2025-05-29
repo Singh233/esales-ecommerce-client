@@ -42,7 +42,7 @@ export const getProduct = async (id: string): Promise<Product> => {
 };
 
 export interface OrderItem {
-  product: string;
+  product: Product | string;
   quantity: number;
   price: number;
   color?: string | null;
@@ -85,6 +85,7 @@ export interface Order {
   };
   paymentMethod: string;
   paymentStatus: string;
+  totalAmount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -104,4 +105,51 @@ export const createOrder = async (orderData: OrderData): Promise<Order> => {
 
   const data = await response.json();
   return data.order || data;
+};
+
+export interface PaginatedOrders {
+  results: Order[];
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
+}
+
+export interface GetUserOrdersOptions {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  status?: string;
+  paymentStatus?: string;
+}
+
+export const getUserOrders = async (
+  options: GetUserOrdersOptions = {}
+): Promise<PaginatedOrders> => {
+  const queryParams = new URLSearchParams();
+
+  if (options.page) queryParams.append("page", options.page.toString());
+  if (options.limit) queryParams.append("limit", options.limit.toString());
+  if (options.sortBy) queryParams.append("sortBy", options.sortBy);
+  if (options.status) queryParams.append("status", options.status);
+  if (options.paymentStatus)
+    queryParams.append("paymentStatus", options.paymentStatus);
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/user-orders?${queryParams}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user orders: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data;
 };
