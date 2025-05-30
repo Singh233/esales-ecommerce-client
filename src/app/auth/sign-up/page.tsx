@@ -115,7 +115,6 @@ export default function SignUpPage() {
         email: formData.email,
         password: formData.password,
         name: `${formData.firstName} ${formData.lastName}`,
-        callbackURL: "/",
       });
 
       if (response.error) {
