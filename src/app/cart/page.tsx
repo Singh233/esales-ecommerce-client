@@ -171,19 +171,21 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <Link href="/">
-                <Button variant="ghost" size="icon">
-                  <ArrowLeft className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="shrink-0">
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-3xl font-bold">Shopping Cart</h1>
-                <p className="text-muted-foreground">
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold truncate">
+                  Shopping Cart
+                </h1>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {totalItems} {totalItems === 1 ? "item" : "items"} in your
                   cart
                 </p>
@@ -194,16 +196,20 @@ export default function CartPage() {
                 variant="outline"
                 onClick={handleClearCart}
                 disabled={isClearing}
+                className="self-start sm:self-auto"
+                size="sm"
               >
                 {isClearing ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Clearing...
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />
+                    <span className="hidden sm:inline">Clearing...</span>
+                    <span className="sm:hidden">Clear</span>
                   </>
                 ) : (
                   <>
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Clear Cart
+                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                    <span className="hidden sm:inline">Clear Cart</span>
+                    <span className="sm:hidden">Clear</span>
                   </>
                 )}
               </Button>
@@ -213,30 +219,32 @@ export default function CartPage() {
           {/* Empty Cart State */}
           {items.length === 0 ? (
             <Card>
-              <CardContent className="p-12 text-center">
-                <ShoppingCart className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
-                <h2 className="text-2xl font-semibold mb-4">
+              <CardContent className="p-6 sm:p-12 text-center">
+                <ShoppingCart className="w-16 h-16 sm:w-24 sm:h-24 text-muted-foreground mx-auto mb-4 sm:mb-6" />
+                <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
                   Your cart is empty
                 </h2>
-                <p className="text-muted-foreground mb-8">
+                <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 px-4">
                   Looks like you haven&apos;t added anything to your cart yet.
                   Start shopping to fill it up!
                 </p>
                 <Link href="/">
-                  <Button size="lg">Continue Shopping</Button>
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Continue Shopping
+                  </Button>
                 </Link>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8">
               {/* Cart Items */}
-              <div className="lg:col-span-2 space-y-4">
+              <div className="lg:col-span-2 space-y-3 sm:space-y-4">
                 {items.map((item) => (
                   <Card key={item.id} className="overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-4">
+                    <CardContent className="p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
                         {/* Product Image */}
-                        <div className="relative w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="relative w-full h-40 sm:w-24 sm:h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                           {item.image ? (
                             <Image
                               src={item.image}
@@ -257,11 +265,11 @@ export default function CartPage() {
                         {/* Product Details */}
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h3 className="text-lg font-semibold truncate">
+                            <div className="min-w-0 flex-1 mr-2">
+                              <h3 className="text-base sm:text-lg font-semibold truncate">
                                 {item.title}
                               </h3>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs sm:text-sm text-muted-foreground">
                                 {item.brand}
                               </p>
                             </div>
@@ -270,14 +278,14 @@ export default function CartPage() {
                               size="icon"
                               onClick={() => handleRemoveItem(item.id)}
                               disabled={removeItemMutation.isPending}
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                           </div>
 
                           {/* Variants */}
-                          <div className="flex flex-wrap gap-2 mb-4">
+                          <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
                             {item.selectedColor && (
                               <Badge variant="secondary" className="text-xs">
                                 Color: {item.selectedColor}
@@ -291,8 +299,8 @@ export default function CartPage() {
                           </div>
 
                           {/* Price and Quantity */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                            <div className="flex items-center justify-center sm:justify-start space-x-3">
                               <Button
                                 variant="outline"
                                 size="icon"
@@ -328,11 +336,11 @@ export default function CartPage() {
                                 <Plus className="h-3 w-3" />
                               </Button>
                             </div>
-                            <div className="text-right">
+                            <div className="text-center sm:text-right">
                               <p className="text-lg font-semibold">
                                 ${(item.price * item.quantity).toFixed(2)}
                               </p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs sm:text-sm text-muted-foreground">
                                 ${item.price.toFixed(2)} each
                               </p>
                             </div>
@@ -345,10 +353,12 @@ export default function CartPage() {
               </div>
 
               {/* Order Summary */}
-              <div className="lg:col-span-1">
-                <Card className="sticky top-4">
-                  <CardHeader>
-                    <CardTitle>Order Summary</CardTitle>
+              <div className="lg:col-span-1 order-first lg:order-last">
+                <Card className="lg:sticky lg:top-4">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg sm:text-xl">
+                      Order Summary
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
@@ -365,14 +375,14 @@ export default function CartPage() {
                         <span>Calculated at checkout</span>
                       </div>
                       <div className="border-t pt-2">
-                        <div className="flex justify-between text-lg font-semibold">
+                        <div className="flex justify-between text-base sm:text-lg font-semibold">
                           <span>Total</span>
                           <span>${totalAmount.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 pt-2">
                       <Button
                         className="w-full"
                         size="lg"
@@ -382,15 +392,19 @@ export default function CartPage() {
                         Proceed to Checkout
                       </Button>
                       <Link href="/" className="block">
-                        <Button variant="outline" className="w-full">
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          size="default"
+                        >
                           Continue Shopping
                         </Button>
                       </Link>
                     </div>
 
                     {/* Security Badge */}
-                    <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground pt-4 border-t">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground pt-3 border-t">
+                      <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
                       <span>Secure checkout</span>
                     </div>
                   </CardContent>

@@ -277,7 +277,7 @@ export default function CheckoutPage() {
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center space-x-4 p-4 border rounded-lg"
+                        className="flex md:items-center space-x-4 p-4 border rounded-lg flex-col md:flex-row"
                       >
                         <div className="relative w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
                           {item.image ? (

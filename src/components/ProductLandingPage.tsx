@@ -213,15 +213,15 @@ export default function ProductLandingPage({
               </CarouselContent>
               {images.length > 1 && (
                 <>
-                  <CarouselPrevious />
-                  <CarouselNext />
+                  <CarouselPrevious className="bg-white/80 hover:bg-white shadow-lg border-0 h-8 w-8 md:h-10 md:w-10" />
+                  <CarouselNext className="bg-white/80 hover:bg-white shadow-lg border-0 h-8 w-8 md:h-10 md:w-10" />
                 </>
               )}
             </Carousel>
 
             {/* Thumbnail indicators */}
             {images.length > 1 && (
-              <div className="flex justify-center space-x-2">
+              <div className="flex justify-center space-x-2 mt-4">
                 {images.map((_, index) => (
                   <div
                     key={index}

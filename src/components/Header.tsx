@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { LogOut, Menu, X, ShoppingCart, Home, Package } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { useAppSelector, useAppDispatch } from "~/lib/redux/store";
@@ -11,13 +11,14 @@ import { setCartFromAPI, clearCart } from "~/lib/redux/features/cartSlice";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const totalItems = useAppSelector((state) => state.cart.totalItems);
   const dispatch = useAppDispatch();
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Fetch cart data when user is authenticated
   const { data: cartData } = useQuery({
@@ -38,34 +39,41 @@ export default function Header() {
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
-      dispatch(clearCart()); // Clear cart when user signs out
+      dispatch(clearCart());
       toast.success("Successfully signed out");
       router.refresh();
+      setIsMenuOpen(false);
     } catch (error) {
       console.error("Sign out error:", error);
       toast.error("Failed to sign out");
     }
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo placeholder on the left */}
+          {/* Logo on the left */}
           <Link className="flex items-center space-x-2 cursor-pointer" href="/">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
               E
             </div>
-            <span className="text-xl font-bold tracking-tight">ESales</span>
+            <span className="text-lg sm:text-xl font-bold tracking-tight">
+              ESales
+            </span>
           </Link>
 
-          {/* Navigation items could go here in the center */}
-          <div className="flex items-center gap-2">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-2">
             <Link
               href={"/"}
               className="relative text-gray-600 flex items-center gap-2 p-2 text-xs font-semibold rounded-sm hover:bg-gray-100 transition-colors"
             >
-              {/* <ShoppingCart className="h-4 w-4" /> */}
+              <Home className="h-4 w-4" />
               Home
               <span className="sr-only">Home</span>
             </Link>
@@ -74,7 +82,7 @@ export default function Header() {
               href={"/orders"}
               className="relative text-gray-600  flex items-center gap-2 p-2 text-xs font-semibold rounded-sm hover:bg-gray-100 transition-colors"
             >
-              {/* <ShoppingCart className="h-4 w-4" /> */}
+              <Package className="h-4 w-4" />
               Orders
               <span className="sr-only">Orders</span>
             </Link>
@@ -83,7 +91,7 @@ export default function Header() {
               href={"/cart"}
               className="relative text-gray-600  flex items-center gap-2 p-2 text-xs font-semibold rounded-sm hover:bg-gray-100 transition-colors"
             >
-              {/* <ShoppingCart className="h-4 w-4" /> */}
+              <ShoppingCart className="h-4 w-4" />
               Cart
               {totalItems > 0 && (
                 <Badge className="absolute -top-1 -right-3 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-500">
@@ -94,9 +102,21 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Cart and User icons on the right */}
-          <div className="flex items-center gap-4">
-            {/* Cart Button */}
+          {/* Right side - Authentication and mobile menu */}
+          <div className="flex items-center gap-2">
+            {/* Cart icon for mobile - shows cart count */}
+            <Link
+              href="/cart"
+              className="md:hidden relative p-2 text-gray-600 hover:bg-gray-100 rounded-sm transition-colors"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {totalItems > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-500">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </Badge>
+              )}
+              <span className="sr-only">Shopping cart</span>
+            </Link>
 
             {/* Authentication Section */}
             {isPending ? (
@@ -105,7 +125,7 @@ export default function Header() {
               </div>
             ) : session?.user ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium hidden sm:inline">
+                <span className="text-sm font-medium hidden sm:inline truncate max-w-24 lg:max-w-none">
                   {session.user.name || session.user.email}
                 </span>
                 <Button
@@ -120,18 +140,70 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Link href="/auth/sign-in">
+                <Link href="/auth/sign-in" className="hidden sm:block">
                   <Button variant="outline" size="sm">
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/auth/sign-up">
-                  <Button size="sm">Sign Up</Button>
+                  <Button size="sm" className="text-xs sm:text-sm">
+                    Sign Up
+                  </Button>
                 </Link>
               </div>
             )}
+
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-8 w-8"
+              onClick={toggleMenu}
+            >
+              {isMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+              <span className="sr-only">Toggle menu</span>
+            </Button>
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t bg-background/95 backdrop-blur">
+            <div className="py-4 space-y-2">
+              <Link
+                href="/"
+                className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Home className="h-4 w-4" />
+                Home
+              </Link>
+
+              <Link
+                href="/orders"
+                className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Package className="h-4 w-4" />
+                Orders
+              </Link>
+
+              {!session?.user && (
+                <Link
+                  href="/auth/sign-in"
+                  className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors sm:hidden"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
