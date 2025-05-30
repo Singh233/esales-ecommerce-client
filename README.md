@@ -2,6 +2,9 @@
 
 A modern React/Next.js frontend for an eCommerce checkout flow simulation built as a coding assignment.
 
+![esales-mockup](https://github.com/user-attachments/assets/6b561ed8-8e01-444c-bbc4-99e7e5b8b3b4)
+
+
 ## Features
 
 - **Product Landing Page**: Display product with image carousel, variants, and quantity selector
