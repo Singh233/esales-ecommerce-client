@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# eSales eCommerce Client
 
-## Getting Started
+A modern React/Next.js frontend for an eCommerce checkout flow simulation built as a coding assignment.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Product Landing Page**: Display product with image carousel, variants, and quantity selector
+- **Shopping Cart**: Add/remove items, update quantities, persistent storage
+- **Checkout Form**: Complete form validation for customer and payment details
+- **Payment Simulation**: Test different payment scenarios (approved, declined, gateway error)
+- **Order Confirmation**: Display order details with unique order number
+- **Order History**: View past orders with status tracking
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Real-time Updates**: React Query for efficient data fetching and caching
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **State Management**: Redux Toolkit for cart state
+- **Data Fetching**: TanStack React Query
+- **Authentication**: BetterAuth client integration
+- **Forms**: Custom validation with real-time feedback
+- **Icons**: Lucide React
+- **Notifications**: Sonner for toast messages
+
+
+## Pages & Flow
+
+### 1. Landing Page (`/`)
+
+- **Product Display**: Image carousel, title, price, description
+- **Variant Selection**: Color and size dropdowns
+- **Quantity Selector**: Increment/decrement with stock validation
+- **Add to Cart**: Adds selected item with variants to cart
+
+### 2. Cart Page (`/cart`)
+
+- **Item Management**: View, update quantities, remove items
+- **Order Summary**: Subtotal, tax, total calculations
+- **Persistent Storage**: Cart synced between Redux and API
+- **Checkout Button**: Navigate to checkout when ready
+
+### 3. Checkout Page (`/checkout`)
+
+- **Contact Information**: Name, email, phone validation
+- **Shipping Address**: Street, city, state, zip validation
+- **Payment Details**: Card number (16-digit), expiry (MM/YY), CVV validation
+- **Payment Simulation**: Choose approved/declined/error scenarios
+- **Order Summary**: Review items before submission
+
+### 4. Order Confirmation (`/order-confirmation/[orderNumber]`)
+
+- **Order Details**: Unique order number, items, customer info
+- **Confirmation Message**: Success notification
+- **Email Notification**: Automatic confirmation email sent
+
+### 5. Order History (`/orders`)
+
+- **Past Orders**: List of user's orders with status
+- **Order Details**: Expandable view with full order information
+- **Status Tracking**: Payment and order status badges
+
+## Form Validations
+
+All forms include real-time validation:
+
+- **Email**: Valid email format required
+- **Phone**: International phone number format
+- **Card Number**: Exactly 16 digits with formatting
+- **Expiry Date**: MM/YY format, must be future date
+- **CVV**: Exactly 3 digits
+- **Required Fields**: All mandatory fields validated
+
+## Payment Simulation
+
+The checkout form includes a simulation panel to test:
+
+1. **Approved Transaction**: Order created successfully
+2. **Declined Transaction**: Payment fails, error message shown
+3. **Gateway Error**: Network/processing error simulation
+
+## State Management
+
+- **Redux**: Global cart state management
+- **React Query**: Server state caching and synchronization
+- **Local Storage**: Cart persistence for unauthenticated users
+- **Session Storage**: Temporary form data preservation
+
+## Authentication
+
+- **Sign Up**: New user registration
+- **Sign In**: Existing user login
+- **Protected Routes**: Cart and orders require authentication
+- **Session Management**: Automatic session handling
+
+## API Integration
+
+The client communicates with the API for:
+
+- **Products**: Fetch product details
+- **Cart**: CRUD operations on cart items
+- **Orders**: Create and retrieve orders
+- **User**: Authentication and profile management
+
+## Component Structure
+
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+src/
+├── app/                # Next.js app router pages
+├── components/         # Reusable UI components
+│   ├── ui/            # shadcn/ui base components
+│   └── custom/        # Custom business components
+├── lib/               # Utilities and configurations
+│   ├── redux/         # Redux store and slices
+│   ├── hooks/         # Custom React hooks
+│   └── providers/     # Context providers
+└── types/             # TypeScript type definitions
+```
